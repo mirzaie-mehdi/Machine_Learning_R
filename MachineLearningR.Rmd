@@ -1,0 +1,61 @@
+---
+title: "MachineLearningR"
+output: html_document
+date: "2023-03-06"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Library
+
+```{r}
+#remotes::install_github("bgovaerts/LMWiRe")
+library(LMWiRe)
+library(tidyverse)
+library(dplyr)
+library(ggplot2)
+library(reshape2)
+library(shinythemes)
+library(gridExtra)
+
+```
+
+## Reading data set
+```{r }
+data("UCH")
+df = readRDS("data/df.rds")
+meta = readRDS("data/meta.rds")
+tdataX <- t(df)
+
+set.seed(123)
+spectr_samp10 <- sample(colnames(tdataX), 15)
+df_samp10 <- tdataX[,spectr_samp10]
+
+df_samp10 <- cbind.data.frame(df_samp10, spec = as.factor(1:nrow(df_samp10))) 
+df_samp10 <- melt(df_samp10, id.vars = "spec" )
+df_samp10 <- cbind.data.frame(df_samp10, ppm = as.numeric(rownames(tdataX)))
+dimnames(df_samp10)[[2]][2] <- "Spectrum"
+
+gg_labs <- labs(title = "15 random Spectrums representation", y = "Spectrums intensities", caption = "By redoing several times with the other spectrums, we saw that the shape is always very similar." )
+
+gg_spectre10 <-  ggplot(df_samp10)  +  geom_line(aes(x = ppm, y = value, col = Spectrum), size = 0.45) + gg_labs + scale_color_hue(l = 20, c = 200)  + theme_bw() + scale_x_reverse()  +
+  annotate(geom = "text", label = "Hippurate",
+           x = 7.1,
+           y = .035, col = "#33666C" , size = 5, fontface = "bold") +
+  geom_segment(aes(x = 7, xend = 7.5, y = 0.033, yend = .027),
+               arrow = arrow(length = unit(0.5, "cm")), col = "#33666C") +
+  geom_segment(aes(x = 6.2, xend = 4.35, y = 0.034, yend = .0328),
+               arrow = arrow(length = unit(0.5, "cm")), col = "#33666C") +
+  annotate(geom = "text", label = "Citrate",
+           x = 1.5,
+           y = .038, col = "#33666C" , size = 5, fontface = "italic") +
+  geom_segment(aes(x = 1.7, xend = 2.3, y = 0.036, yend = .0325),
+               arrow = arrow(length = unit(0.5, "cm")), col = "#33666C") 
+#ggplotly(gg_spectre10) # Too slow
+gg_spectre10
+
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
