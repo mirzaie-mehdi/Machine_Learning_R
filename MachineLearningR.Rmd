@@ -12,12 +12,12 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r}
 #remotes::install_github("bgovaerts/LMWiRe")
-library(LMWiRe)
+#library(LMWiRe)
 library(tidyverse)
 library(dplyr)
 library(ggplot2)
 library(reshape2)
-library(shinythemes)
+#library(shinythemes)
 library(gridExtra)
 
 ```
@@ -59,3 +59,56 @@ gg_spectre10
 ```
 
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+# Linear Regression
+
+**Regression** generally refers to predicting a real number. However, it can also be used for classification (predicting a class or category).
+
+The term **linear** refers to the fact that the method model data with linear combination of explanatory variables.
+
+linear combination is an expression where one or more variables are scaled by a constant factor and added together.
+
+- multiple correlation coefficients
+
+- standardize coefficients
+
+- multi-colinearity
+
+- $R^2$ indicates total variability captured by independent variables.
+
+
+- F-statistic.  \[H_0:\beta_1 = \beta_2 = \beta_3 = 0\]
+                \[H_1: \text{at least one } \beta_{i} \neq 0\]
+is called overall test. If F-statistic reject the Null hypothesis then go through p-values.
+
+
+                
+- Gradient descend is used to find the best parameters for linear regression.
+
+- There are twp types of variances: stochastic and deterministic. Stochastic variance is noise.
+The variance of dependent/independent variable is deterministic, but the variance around the model is noise.
+
+- Different types of errors in linear regression.
+
+1. sum of square error (non-deterministic error): 
+$$Error =  \frac{\sum_{i =1}^{n} (\hat{y} - y_i )^2}{n}$$
+The line $\hat{y}$ which gives sum of squared errors is considered as the best line.
+
+2. Total error is the difference between the actual data points and the mean value of y-values.
+
+3. regression error is the difference between the predicted value and the mwan value of y-values.
+
+
+![The different types of errors](errors.png)
+
+- Coefficient of determination, $R^2$: How much of total variance in Y (deterministic or stochastic) has been explained by your model. $R^2$ should be close to 1, if the model is good.
+In another words, $R^2$ is the proportion of the variation in the dependent variable that is predicted from the  independent variable.
+
+$$ R^2 = 1 - \frac{RSS}{TSS}$$
+- Adjusted coefficient of determination. When we include some useless variables in the model, the $R^2$ will increase, but the **Adjusted coefficient of determination** will decrease. Adjusted Rsquare compare two models with the same dependent variable.
+
+
+```{r}
+
+```
+
