@@ -16,6 +16,7 @@ library(dplyr)
 library(ggplot2)
 library(reshape2)
 library(gridExtra)
+library(GGally)
 
 ```
 
@@ -27,7 +28,47 @@ The term **linear** refers to the fact that the method model data with linear co
 
 linear combination is an expression where one or more variables are scaled by a constant factor and added together.
 
+- Linear regression: We assume that the *true* relationship between X and Y takes the form  Y=f(X)+ \epsilon, for some unknown function f, where \epsilon is a mean- zero random error term. If *f* is to be approximated by a linear function, then we can write this relationship as
+\[Y = \beta_0 + \beta_1 X + \epsilon \]
+Here $\beta_0$ is the intercept term and it is the expected value of Y when X=0, and $\beta_1$ is the slope- the average increase in Y associated with a one-unit increase in X. 
+The above model defines the **population regression line**, which is the best linear approximation to the true relationship between X and Y. The least squares regression coefficient estimates characterize the *least squares line*, defined by 
+\[ \hat y  = \hat \beta_0  + \hat \beta_1 x \].
+  -- **least square estimates** are *unbiased* estimations.
+ \[ \hat \beta_1  = \frac{\sum _{i =1}^n (x_i  - \bar x)(y_i  - \bar y)}{\sum _{i=1}^n (x_i  - \bar x)^2}  \]
+ 
+ \[ \beta_0  = \bar y - \hat\beta_1  \bar x \]
+
+  -- If we wonder how close $\hat \beta_0$ and $\hat \beta_1$ are to the true values $\beta_0$ and      $\beta_1$. To compute the standard errors associated with $\hat \beta_0$ and $\hat \beta_1$, we use the following formulas:
+  \[SE(\hat \beta_0 )^2 = \sigma^2 [\frac{1}{n} + \frac{\bar x^2}{\sum_{i=1}^n (x_i -\bar x)^2}]\]
+    \[SE(\hat \beta_1 )^2 =  \frac{\sigma^2}{\sum_{i=1}^n (x_i -\bar x)^2}.\]
+    
+Here we assume that each observation have common variance $\sigma^2$. Notice in the formula that SE($\hat \beta_1$) is smaller when the $x_i$ are more spread out.
+
+For linear regression the 95% confidence interval for $\beta_1$ approximately takes the form
+\[\hat \beta_1 \pm 2SE(\hat \beta_1). \]
+Similarly, the confidence interval for $\hat \beta_0$ approximately takes the form
+\[\hat \beta_0 \pm 2SE(\hat \beta_0). \]
+
+-Assessing the accuracy of the model
+ -- Residual Standard Error
+    We know that associated with each observation is an error term $\epsilon.$ Due to these error terms, even if we know the true regression line i.e. if $\beta_1$ and $\beta_0$ were known, we would not be able to perfectly predict Y from X. The RSE is an estimate of the standard deviation of $\epsilon.$ Actually, it is the average amount that the response will deviate from the true regression line. It is computed using the formula
+    \[ RSE = \sqrt {\frac{1}{n-2}RSS} = \sqrt {\frac{1}{n-2} \sum_{i=1}^n (y_i - \hat y_i)^2}.\]
+    
+ 
+ 
+ -- $R^2$ statistic
+
+   The RSE is considered as a measure of the **lack of fit** of the model to the data. But since it is measured in the units of Y, it is not always clear what constitutes a good RSE. The $R^2$ statistic provides an alternative measure of fit. It takes the form of proportion, the proportion of variance explained and is independent of the scale of Y. To calculate $R^2$, we use the formula
+   
+   \[ R^2 = \frac{TSS - RSS}{TSS}\]
+   
+   where $TSS = \sum(y_i - \bar y)^2$ is the total sum of squares. TSS measures the total variance in the response Y, and can be thought of as the amount of the variability inherited in the response before the regression is performed. RSS measures the amount of variability that is left unexplained after performing the regression. Hence, the TSS - RSS measure the amount of variability in the response that is explained by performing the regression, and **$R^2$ measures the proportion of variability in Y that can be explained by X.**
+   --- In typical application in biology, marketing and other domains, we would expect only a very small proportion of the variance in the response to be explained by the predictor, and an $R^2$ value well below 0.1 might be more realistic.
+
 - multiple correlation coefficients
+ The simple and multiple regression coefficients can be quite different. Because in the simple regression case, the slope term represents the average increase in Y associated with a one unit increase in X ignoring other variables. By contrast, in the multiple regression the coefficient represent the average increase in Y associated with increasing one unit in X while holding other variables fixed.
+ 
+ --- The shark attacks and ice cream sale example shows that how a variable in simple regression can be significant, while in multiple regression does not.
 
 - standardize coefficients
 
@@ -40,7 +81,13 @@ linear combination is an expression where one or more variables are scaled by a 
                 \[H_1: \text{at least one } \beta_{i} \neq 0\]
 is called overall test. If F-statistic reject the Null hypothesis then go through p-values.
 
+\[ F = \frac{\frac{(TSS - RSS)}{p}}{\frac{RSS}{n - p - 1}}\]
 
+when there is no relationship between the response and predictors, one would expect the F-statistic to take on a value close to 1.
+
+- Question: Given the p-values for each predictor, why do we need to look at the overall F-statistic. If we have 100 predictors and $H_0:\beta_1 = \beta_2 = ...  =\beta_p = 0$ is true, so no variable is truly associated with the response. In this case about 5% of the p-values associated with each variable will be below 0.05 by chance. In other words, we expect to see approximately five small p-value even in the absence of any true association between the predictors and the response. However, the F-statistic does not suffer from this problem because it adjusts for the number of predictors.
+
+- The approach of using an F-statistic to test for any association between the predictors and the response works when p is relatively small, and certainly small compared to *n*. If *p>n* then there are more coefficients to estimate than observations from which to estimate them. In this case we can not even fit the multiple regression model using least squares, so the F-statistic can not be used. When *p* is large, some of the approaches such as *forward selection* can be used.   
                 
 - Gradient descend is used to find the best parameters for linear regression.
 
@@ -78,7 +125,45 @@ $$ R^2 = 1 - \frac{RSS}{TSS}$$
 
 - Best fit line go through the $(\bar{x} , \bar{y})$
 
-```{r}
+- The total sum of squares of the observed $y_i$ about their average $\bar{y}$ is the total amount of variability in the dependent variable. 
+$$\sum_{i=1}^{n} (y_i - \bar{y})^2 = \sum_{i=1}^{n} (y_i - \hat{y_i})^2 + \sum_{i=1}^{n} (\hat {y_i} - \bar{y})^2$$
+This amount is partitioned into the sum of squared values of the observed values about the fitted values plus the sum of squared residuals. The sum of squred residuals is reffered to as the error sum of squares or the unexplained sum of squares. 
 
+The sum of squares about the fitted values $\hat{y_i}$ is the amount of variability attributed ti knowing the explanatory variable $x_i$. This is called the *explained* or *model sum of squares*. Ideally we want the model sum of squares to be large relative to the error sum of squares. 
+
+- For every parameter (coefficient) in the regression model, R provides an estimated value and a standard error of that estimate. The    
+  t-value is the ratio
+  
+  $$\text{t-value} = \frac{\text{Estimate}}{\text{Std.Error}}$$
+The corresponding statistical significance of this t-statistic appears under Pr[>|t|]. This tests the null hypothesis that the true, underlying population parameter is actually zero. A small p-value for this test indicates that the
+strong relationship between the variables could not have happened by chance alone.
+
+- If we obtain a negative coefficient for a variable that is expected to have a positive correlation with the dependent variable, it can be attributed to the presence of multicollinearity.
+
+- The following output includes an estimate of 2.5 for the standard deviation of the errors associated with the linear model. That is, the fitted model 
+estimates the mpg with a standard deviation of about 2.5. To appreciate the value of the regression, let us compare this value to the standard deviation
+of the marginal mpg values, sd(mtcars$mpg)=  6.026948 illustrating the much higher variability associated without the use of the linear model.
+
+```{r}
+str(mtcars)
+data<-dplyr::select(mtcars,mpg,cyl,wt,am,carb)
+ggpairs(data)
+```
+
+Before fitting linear models,let’s examine the independence of our potential predictors and the dependent variable. Multiple linear regressions assume that predictors are all independent with each other.Is this assumption valid?
+
+```{r}
+cor(data[c("cyl", "wt", "am","carb")])
+```
+If two of our predictors are highly correlated,they both provide similar information. Such multicollinearity may cause undue bias in the model. and one common practice is to remove one of the highly correlated predictors prior to fitting the model.
+
+```{r}
+univ.glm <- lm(formula = mpg ~ cyl + wt + am + carb , data = mtcars)
+summary(univ.glm)
+```
+
+
+```{r}
+car::vif(lm(mpg ~ cyl + wt + am + carb, data=data))
 ```
 
