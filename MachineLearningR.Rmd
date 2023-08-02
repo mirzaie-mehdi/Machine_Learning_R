@@ -1,16 +1,26 @@
 ---
-title: "MachineLearningR"
-output: html_document
-date: "2023-03-06"
+title: "Machine Learning in R"
+author: Mehdi Mirzaie
+date: "`r Sys.Date()`"
+output: 
+  html_document: 
+    keep_md: yes 
+    toc: true  
+    toc_depth: 4
+    toc_float: 
+      collapsed: false 
+      smooth_scroll: true
+    theme: flatly  
+    highlight: pygments 
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = FALSE,warning=FALSE, fig.pos= "h")
 ```
 
-## Library
 
-```{r}
+
+```{r libraries, warning = FALSE, error = FALSE, message = FALSE, include=FALSE}
 library(tidyverse)
 library(dplyr)
 library(ggplot2)
@@ -28,7 +38,9 @@ The term **linear** refers to the fact that the method model data with linear co
 
 linear combination is an expression where one or more variables are scaled by a constant factor and added together.
 
-- Linear regression: We assume that the *true* relationship between X and Y takes the form  Y=f(X)+ \epsilon, for some unknown function f, where \epsilon is a mean- zero random error term. If *f* is to be approximated by a linear function, then we can write this relationship as
+## Simple Linear regression:
+
+We assume that the *true* relationship between X and Y takes the form  $Y=f(X)+ \epsilon$, for some unknown function f, where $\epsilon$ is a mean- zero random error term. If *f* is to be approximated by a linear function, then we can write this relationship as
 \[Y = \beta_0 + \beta_1 X + \epsilon \]
 Here $\beta_0$ is the intercept term and it is the expected value of Y when X=0, and $\beta_1$ is the slope- the average increase in Y associated with a one-unit increase in X. 
 The above model defines the **population regression line**, which is the best linear approximation to the true relationship between X and Y. The least squares regression coefficient estimates characterize the *least squares line*, defined by 
@@ -49,14 +61,14 @@ For linear regression the 95% confidence interval for $\beta_1$ approximately ta
 Similarly, the confidence interval for $\hat \beta_0$ approximately takes the form
 \[\hat \beta_0 \pm 2SE(\hat \beta_0). \]
 
--Assessing the accuracy of the model
- -- Residual Standard Error
-    We know that associated with each observation is an error term $\epsilon.$ Due to these error terms, even if we know the true regression line i.e. if $\beta_1$ and $\beta_0$ were known, we would not be able to perfectly predict Y from X. The RSE is an estimate of the standard deviation of $\epsilon.$ Actually, it is the average amount that the response will deviate from the true regression line. It is computed using the formula
+### The accuracy of the model
+#### Residual Standard Error
+
+We know that associated with each observation is an error term $\epsilon.$ Due to these error terms, even if we know the true regression line i.e. if $\beta_1$ and $\beta_0$ were known, we would not be able to perfectly predict Y from X. The RSE is an estimate of the standard deviation of $\epsilon.$ Actually, it is the average amount that the response will deviate from the true regression line. It is computed using the formula
     \[ RSE = \sqrt {\frac{1}{n-2}RSS} = \sqrt {\frac{1}{n-2} \sum_{i=1}^n (y_i - \hat y_i)^2}.\]
     
  
- 
- -- $R^2$ statistic
+#### $R^2$ statistic
 
    The RSE is considered as a measure of the **lack of fit** of the model to the data. But since it is measured in the units of Y, it is not always clear what constitutes a good RSE. The $R^2$ statistic provides an alternative measure of fit. It takes the form of proportion, the proportion of variance explained and is independent of the scale of Y. To calculate $R^2$, we use the formula
    
@@ -65,7 +77,48 @@ Similarly, the confidence interval for $\hat \beta_0$ approximately takes the fo
    where $TSS = \sum(y_i - \bar y)^2$ is the total sum of squares. TSS measures the total variance in the response Y, and can be thought of as the amount of the variability inherited in the response before the regression is performed. RSS measures the amount of variability that is left unexplained after performing the regression. Hence, the TSS - RSS measure the amount of variability in the response that is explained by performing the regression, and **$R^2$ measures the proportion of variability in Y that can be explained by X.**
    --- In typical application in biology, marketing and other domains, we would expect only a very small proportion of the variance in the response to be explained by the predictor, and an $R^2$ value well below 0.1 might be more realistic.
 
-- multiple correlation coefficients
+### Variable selection
+
+It is possible that all of the predictors are associated with the response, but it is more often the case that the response is only associated with the subset of predictors. This is called the variable selection. There are a total of $2^p$ models that contain subsets of $p$ variables. Therefore, trying out every possible subset of the predictors is in-feasible. There are three classical approaches for this task:
+
+- *Forward selection*. We begin with the *null model* and then to the present model the variable that results in the lowest RSS.
+
+- *Backward selection*. We start from all variables and then remove the variable with the largest *p-value*. We continue until all remaining variables have a *p-value* below some threshold.
+
+- *Mixed selection*. This is a combination of forward and backward selection. We start from no variables in the model and as with forward selection, we add the variables that provide the best fit. Of course  the *p-value* for variables can become larger as new variable are added to the model. Hence, at any point the *p-value* for one variable in the model raise above a certain threshold, then we remove that variable from the model. We continue until all variables in the model have a sufficiently low *p-value* and all variables outside of the model would have a large *p-value* if added to the model.
+
+### Synergestic Effect
+
+The linear model overestimate dependent variable in the case where most of advertising money was spent exclusively on either TV or radio. and underestimate where the budget was split between the two media. This non-linear pattern suggest a *synergy* or *interaction* effect between variables, whereby combining the variables together results in a bigger boost to sale (dependent variable) than using  any single variable. In this case we extend the linear model to accommodate such synergistic effect.   
+
+### Reducible and irreducible error
+
+- The coefficient estimates $\hat \beta_0, \hat \beta_1, ..., \hat \beta_p$
+are estimates for $\beta_0, \beta_1, ..., \beta_p$, that is the *least square plane* 
+\[\hat Y =  \hat \beta_0+ \hat \beta_1 X_1+ ...+ \hat \beta_p X_p \] is only a estimate for the *true population regression plane* 
+\[ f(X) =   \beta_0+  \beta_1 X_1+ ...+ \beta_p X_p \]
+
+The inaccuracy in the coefficient estimates is related to the *reducible error*.
+
+- Of course assuming a linear model for $f(X)$ is almost always an approximation of reality, so there is additional source of error which is called *model bias*.
+
+- Even if we know the true values for $\beta_0,  \beta_1, ..., \beta_p$, the response value can not be predicted perfectly, because of the random error $\epsilon$ in the model. This is called *irreducible error*
+
+
+### Additivity and linearity
+
+Two of the most assumptions in linear regression states that the relationship between the predictors and response are **additive and linear.**
+The additivity assumption means that the association between a predictor and the response does not depend on the values of other variables. The linearity assumption states that the change in the response associated with a one unit change in the independent variable $X_j$ is constant, regardless of the value of $X_j$.
+Consider the linear model, 
+\[ Y =   \beta_0+  \beta_1 X_1+ \beta_2 X_2 \]
+As an example, let's say you changed the value of $X_2$ by adding 1, such that $\tilde X_2 = X_2 + 1$, then you would have:
+
+$$ \tilde y =  \beta_0+  \beta_1 X_1+ \beta_2 \tilde X_2 = \beta_0+  \beta_1 X_1+ \beta_2 (X_2 + 1)$$
+$$ = \beta_0 +  \beta_1 X_1 + \beta_2  X_2 + \beta_2 = y + \beta_2 $$
+So you can see pretty clearly, the effect of one-unit change of $X_2$ on $y$ does not depend on the values of $X1$ (additivity) and also on the values of $X_2$(linearity).
+
+
+## Multiple regression
  The simple and multiple regression coefficients can be quite different. Because in the simple regression case, the slope term represents the average increase in Y associated with a one unit increase in X ignoring other variables. By contrast, in the multiple regression the coefficient represent the average increase in Y associated with increasing one unit in X while holding other variables fixed.
  
  --- The shark attacks and ice cream sale example shows that how a variable in simple regression can be significant, while in multiple regression does not.
@@ -114,6 +167,31 @@ $$ R^2 = 1 - \frac{RSS}{TSS}$$
 - Adjusted coefficient of determination. When we include some useless variables in the model, the $R^2$ will increase, but the **Adjusted coefficient of determination** will decrease. Adjusted Rsquare compare two models with the same dependent variable.
 
 ![Advantages and disadvantages of linear regression](advantage_regression.png)
+
+
+### Potential Problems
+
+- Non-linearity of the data: *Residual plots* are a useful graphical tool for identifying non-linearity. In this plot on x-axis we have the Fitted value and on y-axis we have the Residuals. The presence of a pattern may indicate a problem with some aspect of the linear model.
+
+![](./fig/nonlinearity.jpg)
+
+- Correlation of Error Terms: An important assumption of the linear regression model is that the error terms for n observations, $\epsilon_1,\epsilon_2,...,\epsilon_n$ are uncorrelated.
+The standard errors that are computed for the estimated regression coefficients or the fitted values are based on the assumption of uncorrelated error terms. If there is a correlation among the error terms, then the estimated standard errors will tend to underestimate the true standard error. As a result, confidence intervals for predictions will be narrower than they should be. In addition, *p-values*  associated with model will be lower than what they should be. In cases where, observations are obtained at adjacent time points will have *positively correlated errors.* In this case, we need to plot the residuals as a function of time and the correlation between error terms for adjacent time points show the correlation of Error terms.
+
+
+- Non-constant Variance of Error terms: Another important assumption of the linear model is that the error terms have a constant variance, $Var(\epsilon_i) = \sigma ^2.$ The standard errors, confidence intervals, and hypothesis tests with the linear model rely upon this assumption.
+
+![](./fig/variance.jpg)
+
+Unfortunately, it is often the case that the variance of the error terms are non-constant. For example the variance of the error terms may increase with the value of the response. Non-constant variance in the errors is called *heteroscedasticity*, form the presence of a **funnel shape** in the residual plot.  In this case one solution is to transform the response Y using a concave function such as $logY$ or $\sqrt Y.$ Such a transformation results in a greater amount of shrinkage of the larger response leading to a reduction in heteroscedasticity.
+
+Some time we have a good idea of the variance of each response. For example, the $i$th response could be an average of $n_i$ raw observations. If each of observations is uncorrelated with variance $\sigma^2$, then their average has variance $\sigma_i^2 = \frac{\sigma^2}{n}.$  In this case the simple solution is to fit our model by *weighted least squares,* which weights proportional to the inverse variance, i.e. $w_i = n_i$.
+
+- Outlier: an outlier is a point for which $y_i$ is far from the value predicted by the model. Outlier would affect the RSE and since the RSE is used to compute all confidence intervals and *p-values*, such a dramatic increase caused by a single data point can have implications for the interpretation of the fit. Similarly, inclusion of the outlier causes the $R^2$ to decline from 0.892 to 0.805.
+
+Residual plot can be used to identify outliers. Observations whose studentized residual are greater than 3 in absolute value are possible outliers, and to be removed.
+
+![left:red line before outlier removing and blue after outlier removing. right: the outlier has a studentized residual of 6](./fig/outlier.jpg)
 
 - low variance filter means to ignore data columns that does not have enough variance.
 
