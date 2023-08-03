@@ -193,6 +193,23 @@ Residual plot can be used to identify outliers. Observations whose studentized r
 
 ![left:red line before outlier removing and blue after outlier removing. right: the outlier has a studentized residual of 6](./fig/outlier.jpg)
 
+- High leverage Points: Outlier are observations for which the response $y_i$ is unusual, in contrast, observations with high leverage have an unusual value for $X_i$. Removing the high leverage observation has a much more impact on the least square line than removing the outlier.
+![](./fig/leverage.jpg)
+The leverage statistic for a simple linear regression is as follows.
+$$h_i = \frac{1}{n} + \frac{(x_i- \bar x)^2}{\sum_{i=1}^n (x_i - \bar x)^2}$$
+The larger the value of the leverage statistic, the higher leverage. The right-handed of above figure provides studentized residuals versus $h_i$. Observation 41 has a very high leverage and high studentized residuals. This is a dangerous combination.
+
+- Collinearity: *Collinearity* refers to the situation in which two or more predictor variables are closely related to each other. The presence of collinearity can pose problems in the regression context, since it can be difficult to spread out the individual effect of collinear variables on the response variable.
+Collinearity reduces the accuracy of the estimates of the regression coefficients, it causes the standard errors for $\hat \beta_j$ to grow. As a result in the presence of the collinearity, the probability of correctly detecting of non-zero coefficients- the power of test- is reduced by collinearity.
+One way to assess multiple collinearity is to compute the *variance inflation factor (VIF)* 
+
+$$VIF(\hat \beta_j) = \frac{1}{1 - R^2_{X_j|X_{j-1}}}$$
+where $R^2_{X_j|X_{j-1}}$ is the $R^2$ from a regression of $X_j$ onto all of the other predictors. If $R^2_{X_j|X_{j-1}}$ is close to one, then collinearity is present and so the VIF will be large.
+As a rule of thumb, a VIF value that exceeds 5 or 10 indicates a problematic amount of collinearity.
+
+When faced with the problem of collinearity, there are two simple solutions. The first is to drop one of the problematic variables from the regression and the second is to combine the collinear variables together into a single predictor. For example, we might take the average of standardized versions of collinear variables in order to create a new variable that measures both variables.
+
+
 - low variance filter means to ignore data columns that does not have enough variance.
 
 - Male or Female can not be replaced with 0 or 1. Since in this case, Male and Female will have order. In this case we should define two variables male and female and set the value of male column to 1 if the gender of the sample is male.
@@ -217,6 +234,29 @@ The corresponding statistical significance of this t-statistic appears under Pr[
 strong relationship between the variables could not have happened by chance alone.
 
 - If we obtain a negative coefficient for a variable that is expected to have a positive correlation with the dependent variable, it can be attributed to the presence of multicollinearity.
+
+### Comparison of KNN with Linear regression
+
+- In general, the optimal value for K in KNN depend on the *bias-variance trade off*
+
+- The following figure compares the results of KNN when K = 1 (left figure) and K = 9 (right figure). When K increases the fitted curve using KNN  represents a smoother fit.
+![](./fig/knn.jpg)
+
+- When the true model is linear, the least square regression line provides a very good estimate compared with KNN.
+Since the true model is linear, the best result for KNN occur with a very large value of K. 
+![](./fig/knn-regression.jpg)
+
+when the true model is non-linear, KNN outperforms linear regression.The following top figure is an example of slightly non-linear data and the bottom is a strongly non-linear.
+![](./fig/knn-nonlinear.jpg)
+The following figure consider similar situation where there is strongly non-linear relation. When p = 1 or p = 2, KNN outperforms the linear regression. for p = 3 the results are mixed and for p >=4 linear regression is  superior to KNN. In this case where there are 50 observations, spreading 50 observations over 20 dimension has only a small effect on the linear regression in the MSE, but has more than ten-fold increase in the MSE for KNN.
+Spreading 50 observations over p = 20 dimensions results in a phenomenon in which a given observation has no nearby neighbor. This is called *curse of dimensionality*. That is the K observations that are nearest to a given test observation may be very far from that point in p-dimensional space when p is large, leading to a very poor prediction of f(x) and hence a poor KNN fit.
+![](./fig/knn-p.jpg)
+
+
+As a general rule, parametric methods outperform non-parametric approaches when there is a small  number of observations per predictor.
+
+Even when the dimension is small, we might prefer linear regression to KNN from an interpret ability standpoint. If the test MSE of KNN is only slightly lower than that of linear regression we prefer to use a simple model that can be described in terms of a few coefficients. 
+
 
 - The following output includes an estimate of 2.5 for the standard deviation of the errors associated with the linear model. That is, the fitted model 
 estimates the mpg with a standard deviation of about 2.5. To appreciate the value of the regression, let us compare this value to the standard deviation
