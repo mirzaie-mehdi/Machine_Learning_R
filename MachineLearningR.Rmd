@@ -282,6 +282,13 @@ summary(univ.glm)
 
 
 ```{r}
+predict(univ.glm, interval = "confidence")
 car::vif(lm(mpg ~ cyl + wt + am + carb, data=data))
 ```
 
+
+## LDA versus PCA
+
+The following figure shows that how different directions in data reduction would affect the result of classification.
+
+![](./fig/pca_lda.png)

@@ -1,7 +1,7 @@
 ---
 title: "Machine Learning in R"
 author: Mehdi Mirzaie
-date: "2023-08-02"
+date: "2023-08-07"
 output: 
   html_document: 
     keep_md: yes 
@@ -195,6 +195,7 @@ One way to assess multiple collinearity is to compute the *variance inflation fa
 
 $$VIF(\hat \beta_j) = \frac{1}{1 - R^2_{X_j|X_{j-1}}}$$
 where $R^2_{X_j|X_{j-1}}$ is the $R^2$ from a regression of $X_j$ onto all of the other predictors. If $R^2_{X_j|X_{j-1}}$ is close to one, then collinearity is present and so the VIF will be large.
+As a rule of thumb, a VIF value that exceeds 5 or 10 indicates a problematic amount of collinearity.
 
 When faced with the problem of collinearity, there are two simple solutions. The first is to drop one of the problematic variables from the regression and the second is to combine the collinear variables together into a single predictor. For example, we might take the average of standardized versions of collinear variables in order to create a new variable that measures both variables.
 
@@ -309,7 +310,49 @@ If two of our predictors are highly correlated,they both provide similar informa
 
 
 ```
+##                          fit       lwr      upr
+## Mazda RX4           21.96404 20.373847 23.55423
+## Mazda RX4 Wag       21.33203 19.755852 22.90820
+## Datsun 710          27.34514 25.363462 29.32682
+## Hornet 4 Drive      20.95312 19.401671 22.50457
+## Hornet Sportabout   17.25384 15.325001 19.18267
+## Valiant             20.34590 18.773832 21.91796
+## Duster 360          15.43570 13.605856 17.26554
+## Merc 240D           22.66077 20.289017 25.03253
+## Merc 230            22.75991 20.396509 25.12331
+## Merc 280            18.15156 16.100642 20.20248
+## Merc 280C           18.15156 16.100642 20.20248
+## Merc 450SE          14.94443 13.558802 16.33007
+## Merc 450SL          15.78711 14.287828 17.28640
+## Merc 450SLC         15.66319 14.198227 17.12815
+## Cadillac Fleetwood  11.27187  8.793990 13.74976
+## Lincoln Continental 10.84062  8.080221 13.60102
+## Chrysler Imperial   11.03642  8.405793 13.66705
+## Fiat 128            27.64256 25.745837 29.53928
+## Honda Civic         28.34449 26.572512 30.11648
+## Toyota Corolla      28.54720 26.744770 30.34963
+## Toyota Corona       25.20563 22.912462 27.49880
+## Dodge Challenger    17.05556 15.188387 18.92273
+## AMC Javelin         17.26623 15.333199 19.19926
+## Camaro Z28          14.76651 13.219993 16.31303
+## Pontiac Firebird    16.25006 14.511881 17.98823
+## Fiat X1-9           28.29935 26.497549 30.10116
+## Porsche 914-2       27.04330 25.461838 28.62476
+## Lotus Europa        28.59730 26.726437 30.46816
+## Ford Pantera L      18.20722 15.826731 20.58771
+## Ferrari Dino        20.09633 17.630570 22.56209
+## Maserati Bora       14.22396 10.956817 17.49110
+## Volvo 142E          25.45708 23.341815 27.57234
+```
+
+```
 ##      cyl       wt       am     carb 
 ## 3.018795 4.164539 2.813441 2.025210
 ```
 
+
+## LDA versus PCA
+
+The following figure shows that how different directions in data reduction would affect the result of classification.
+
+![](./fig/pca_lda.png)
